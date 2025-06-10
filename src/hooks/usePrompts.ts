@@ -17,7 +17,7 @@ export const usePrompts = () => {
         .from('prompts')
         .select(`
           *,
-          author:profiles(*)
+          profiles!prompts_author_id_fkey(*)
         `)
         .eq('is_public', true)
         .order('created_at', { ascending: false });
@@ -33,14 +33,21 @@ export const usePrompts = () => {
 
         const likedPromptIds = new Set(likedPrompts?.map(like => like.prompt_id) || []);
 
-        const promptsWithLikes = promptsData?.map(prompt => ({
+        const promptsWithLikes = (promptsData || []).map(prompt => ({
           ...prompt,
+          author: prompt.profiles,
           isLiked: likedPromptIds.has(prompt.id)
-        })) || [];
+        }));
 
         setPrompts(promptsWithLikes as PromptWithAuthor[]);
       } else {
-        setPrompts((promptsData || []) as PromptWithAuthor[]);
+        // Transform the data to match our expected structure
+        const transformedPrompts = (promptsData || []).map(prompt => ({
+          ...prompt,
+          author: prompt.profiles
+        }));
+
+        setPrompts(transformedPrompts as PromptWithAuthor[]);
       }
     } catch (error) {
       console.error('Error fetching prompts:', error);

@@ -19,14 +19,20 @@ export const useMyPrompts = () => {
         .from('prompts')
         .select(`
           *,
-          author:profiles(*)
+          profiles!prompts_author_id_fkey(*)
         `)
         .eq('author_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      setPrompts((promptsData || []) as PromptWithAuthor[]);
+      // Transform the data to match our expected structure
+      const transformedPrompts = (promptsData || []).map(prompt => ({
+        ...prompt,
+        author: prompt.profiles
+      }));
+
+      setPrompts(transformedPrompts as PromptWithAuthor[]);
     } catch (error) {
       console.error('Error fetching my prompts:', error);
     } finally {
