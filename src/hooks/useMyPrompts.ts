@@ -26,7 +26,7 @@ export const useMyPrompts = () => {
 
       if (error) throw error;
 
-      setPrompts(promptsData || []);
+      setPrompts((promptsData || []) as PromptWithAuthor[]);
     } catch (error) {
       console.error('Error fetching my prompts:', error);
     } finally {

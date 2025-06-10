@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
 
   const getUpgradeInfo = () => {
     if (user.role === 'user') {
-      const likesNeeded = Math.max(0, 10 - user.totalLikes);
+      const likesNeeded = Math.max(0, 10 - user.total_likes);
       if (likesNeeded > 0) {
         return `Get ${likesNeeded} more likes to become a Prompt Master!`;
       } else {
@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
           <Card className="text-center">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-purple-600">
-                {user.totalLikes}
+                {user.total_likes}
               </CardTitle>
               <CardDescription>Total Likes Received</CardDescription>
             </CardHeader>
@@ -72,7 +72,7 @@ const Dashboard: React.FC = () => {
           <Card className="text-center">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-purple-600">
-                {user.promptCount}
+                {user.prompt_count}
               </CardTitle>
               <CardDescription>Prompts Created</CardDescription>
             </CardHeader>
@@ -105,11 +105,11 @@ const Dashboard: React.FC = () => {
               <div className="w-full bg-purple-200 rounded-full h-3">
                 <div 
                   className="gradient-primary h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, (user.totalLikes / 10) * 100)}%` }}
+                  style={{ width: `${Math.min(100, (user.total_likes / 10) * 100)}%` }}
                 ></div>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                {user.totalLikes}/10 likes needed for Prompt Master
+                {user.total_likes}/10 likes needed for Prompt Master
               </p>
             </CardContent>
           </Card>

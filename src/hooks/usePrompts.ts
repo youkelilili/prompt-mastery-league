@@ -38,9 +38,9 @@ export const usePrompts = () => {
           isLiked: likedPromptIds.has(prompt.id)
         })) || [];
 
-        setPrompts(promptsWithLikes);
+        setPrompts(promptsWithLikes as PromptWithAuthor[]);
       } else {
-        setPrompts(promptsData || []);
+        setPrompts((promptsData || []) as PromptWithAuthor[]);
       }
     } catch (error) {
       console.error('Error fetching prompts:', error);

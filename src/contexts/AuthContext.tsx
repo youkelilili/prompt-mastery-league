@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) throw error;
-      return profile;
+      return profile as DatabaseProfile;
     } catch (error) {
       console.error('Error fetching profile:', error);
       return null;
@@ -52,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fetch profile data from our profiles table
           const profile = await fetchProfile(session.user.id);
           if (profile) {
-            setUser(profile);
+            setUser(profile as AuthUser);
           }
         } else {
           setUser(null);
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (session?.user) {
         fetchProfile(session.user.id).then(profile => {
           if (profile) {
-            setUser(profile);
+            setUser(profile as AuthUser);
           }
           setLoading(false);
         });

@@ -107,7 +107,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                         <p className="text-xs text-muted-foreground">{user.email}</p>
                         <div className="mt-1 flex items-center space-x-2">
                           <span className="text-xs text-muted-foreground">
-                            {user.totalLikes} likes • {user.promptCount} prompts
+                            {user.total_likes} likes • {user.prompt_count} prompts
                           </span>
                         </div>
                       </div>
