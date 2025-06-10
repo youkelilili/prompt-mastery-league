@@ -9,7 +9,113 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar: string | null
+          created_at: string
+          email: string
+          id: string
+          prompt_count: number | null
+          role: string | null
+          total_likes: number | null
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string
+          email: string
+          id: string
+          prompt_count?: number | null
+          role?: string | null
+          total_likes?: number | null
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          prompt_count?: number | null
+          role?: string | null
+          total_likes?: number | null
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      prompt_likes: {
+        Row: {
+          created_at: string
+          id: string
+          prompt_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          prompt_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          prompt_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_likes_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prompts: {
+        Row: {
+          author_id: string
+          category: string | null
+          content: string
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean | null
+          likes_count: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          category?: string | null
+          content: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          likes_count?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          category?: string | null
+          content?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          likes_count?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

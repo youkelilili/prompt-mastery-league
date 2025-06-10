@@ -1,141 +1,131 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, AuthContextType } from '@/types/user';
+import { supabase } from '@/integrations/supabase/client';
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { DatabaseProfile } from '@/types/database';
+
+interface AuthUser extends DatabaseProfile {
+  // 继承 DatabaseProfile 的所有属性
+}
+
+interface AuthContextType {
+  user: AuthUser | null;
+  session: Session | null;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  register: (username: string, email: string, password: string) => Promise<{ error?: string }>;
+  logout: () => Promise<void>;
+  isAuthenticated: boolean;
+  loading: boolean;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users data for demo
-const mockUsers: User[] = [
-  {
-    id: '1',
-    username: 'admin',
-    email: 'admin@example.com',
-    role: 'administrator',
-    createdAt: new Date('2024-01-01'),
-    totalLikes: 0,
-    promptCount: 0,
-  },
-  {
-    id: '2',
-    username: 'john_doe',
-    email: 'john@example.com',
-    role: 'user',
-    createdAt: new Date('2024-02-01'),
-    totalLikes: 5,
-    promptCount: 3,
-  },
-  {
-    id: '3',
-    username: 'prompt_expert',
-    email: 'expert@example.com',
-    role: 'prompt_master',
-    createdAt: new Date('2024-01-15'),
-    totalLikes: 25,
-    promptCount: 12,
-  },
-];
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+      return profile;
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      const userData = JSON.parse(savedUser);
-      const currentUser = users.find(u => u.id === userData.id);
-      if (currentUser) {
-        setUser(currentUser);
-      }
-    }
-  }, [users]);
-
-  const login = async (email: string, password: string): Promise<boolean> => {
-    console.log('Attempting login with:', email);
-    
-    // Simple mock authentication
-    const foundUser = users.find(u => u.email === email);
-    if (foundUser && password === 'password') {
-      setUser(foundUser);
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
-      return true;
-    }
-    return false;
-  };
-
-  const register = async (username: string, email: string, password: string): Promise<boolean> => {
-    console.log('Attempting registration:', { username, email });
-    
-    // Check if user already exists
-    if (users.find(u => u.email === email || u.username === username)) {
-      return false;
-    }
-
-    const newUser: User = {
-      id: Date.now().toString(),
-      username,
-      email,
-      role: 'user',
-      createdAt: new Date(),
-      totalLikes: 0,
-      promptCount: 0,
-    };
-
-    setUsers(prev => [...prev, newUser]);
-    setUser(newUser);
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-    return true;
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('currentUser');
-  };
-
-  const updateUserRole = (userId: string, newRole: User['role']) => {
-    setUsers(prev => prev.map(u => 
-      u.id === userId ? { ...u, role: newRole } : u
-    ));
-    
-    if (user && user.id === userId) {
-      const updatedUser = { ...user, role: newRole };
-      setUser(updatedUser);
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-    }
-  };
-
-  const updateUserStats = (userId: string, likes: number, promptCount: number) => {
-    setUsers(prev => prev.map(u => {
-      if (u.id === userId) {
-        const updatedUser = { ...u, totalLikes: likes, promptCount };
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
+        setSession(session);
         
-        // Auto-upgrade to prompt_master if conditions are met
-        if (updatedUser.role === 'user' && updatedUser.totalLikes >= 10) {
-          updatedUser.role = 'prompt_master';
+        if (session?.user) {
+          // Fetch profile data from our profiles table
+          const profile = await fetchProfile(session.user.id);
+          if (profile) {
+            setUser(profile);
+          }
+        } else {
+          setUser(null);
         }
         
-        return updatedUser;
+        setLoading(false);
       }
-      return u;
-    }));
+    );
 
-    if (user && user.id === userId) {
-      const updatedUser = { ...user, totalLikes: likes, promptCount };
-      if (updatedUser.role === 'user' && updatedUser.totalLikes >= 10) {
-        updatedUser.role = 'prompt_master';
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        fetchProfile(session.user.id).then(profile => {
+          if (profile) {
+            setUser(profile);
+          }
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
       }
-      setUser(updatedUser);
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+      return {};
+    } catch (error: any) {
+      return { error: error.message };
     }
+  };
+
+  const register = async (username: string, email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username: username
+          }
+        }
+      });
+
+      if (error) throw error;
+      return {};
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   return (
     <AuthContext.Provider value={{
       user,
+      session,
       login,
       register,
       logout,
-      isAuthenticated: !!user,
+      isAuthenticated: !!session,
+      loading
     }}>
       {children}
     </AuthContext.Provider>

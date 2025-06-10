@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const CreatePrompt: React.FC = () => {
   const { user } = useAuth();
@@ -38,8 +39,17 @@ const CreatePrompt: React.FC = () => {
     
     if (!formData.title.trim() || !formData.content.trim()) {
       toast({
-        title: "Error",
-        description: "Title and content are required",
+        title: "错误",
+        description: "标题和内容是必填项",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!user) {
+      toast({
+        title: "错误",
+        description: "请先登录",
         variant: "destructive"
       });
       return;
@@ -48,20 +58,37 @@ const CreatePrompt: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Here you would typically save to Supabase
-      // For now, we'll just simulate success
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Parse tags from comma-separated string
+      const tagsArray = formData.tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+
+      const { error } = await supabase
+        .from('prompts')
+        .insert({
+          title: formData.title.trim(),
+          description: formData.description.trim() || null,
+          content: formData.content.trim(),
+          category: formData.category || null,
+          tags: tagsArray,
+          author_id: user.id,
+          is_public: formData.isPublic
+        });
+
+      if (error) throw error;
       
       toast({
-        title: "Success",
-        description: "Prompt created successfully!",
+        title: "成功",
+        description: "Prompt 创建成功！",
       });
       
       navigate('/my-prompts');
     } catch (error) {
+      console.error('Error creating prompt:', error);
       toast({
-        title: "Error",
-        description: "Failed to create prompt. Please try again.",
+        title: "错误",
+        description: "创建失败，请重试",
         variant: "destructive"
       });
     } finally {
@@ -78,79 +105,79 @@ const CreatePrompt: React.FC = () => {
     <Layout>
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Create New Prompt</h1>
+          <h1 className="text-3xl font-bold mb-2">创建新 Prompt</h1>
           <p className="text-muted-foreground">
-            Share your creative prompt with the community
+            与社区分享您的创意 Prompt
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Prompt Details</CardTitle>
+            <CardTitle>Prompt 详情</CardTitle>
             <CardDescription>
-              Fill in the information below to create your prompt
+              填写以下信息来创建您的 Prompt
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title">标题 *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="Enter a catchy title for your prompt"
+                  placeholder="为您的 prompt 起一个吸引人的标题"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">描述</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Brief description of what this prompt does"
+                  placeholder="简要描述这个 prompt 的用途"
                   rows={3}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="content">Prompt Content *</Label>
+                <Label htmlFor="content">Prompt 内容 *</Label>
                 <Textarea
                   id="content"
                   value={formData.content}
                   onChange={(e) => handleInputChange('content', e.target.value)}
-                  placeholder="Enter your prompt content here..."
+                  placeholder="在这里输入您的 prompt 内容..."
                   rows={8}
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">分类</Label>
                 <Select onValueChange={(value) => handleInputChange('category', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder="选择一个分类" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="writing">Writing</SelectItem>
-                    <SelectItem value="coding">Coding</SelectItem>
-                    <SelectItem value="creative">Creative</SelectItem>
-                    <SelectItem value="business">Business</SelectItem>
-                    <SelectItem value="education">Education</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="writing">写作</SelectItem>
+                    <SelectItem value="coding">编程</SelectItem>
+                    <SelectItem value="creative">创意</SelectItem>
+                    <SelectItem value="business">商务</SelectItem>
+                    <SelectItem value="education">教育</SelectItem>
+                    <SelectItem value="other">其他</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tags">Tags</Label>
+                <Label htmlFor="tags">标签</Label>
                 <Input
                   id="tags"
                   value={formData.tags}
                   onChange={(e) => handleInputChange('tags', e.target.value)}
-                  placeholder="Enter tags separated by commas (e.g., creative, storytelling, fun)"
+                  placeholder="输入标签，用逗号分隔 (例如: 创意, 故事, 有趣)"
                 />
               </div>
 
@@ -160,14 +187,14 @@ const CreatePrompt: React.FC = () => {
                   variant="outline" 
                   onClick={() => navigate('/dashboard')}
                 >
-                  Cancel
+                  取消
                 </Button>
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
                   className="gradient-primary"
                 >
-                  {isSubmitting ? 'Creating...' : 'Create Prompt'}
+                  {isSubmitting ? '创建中...' : '创建 Prompt'}
                 </Button>
               </div>
             </form>

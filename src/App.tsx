@@ -9,6 +9,8 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import CreatePrompt from "./pages/CreatePrompt";
+import BrowsePrompts from "./pages/BrowsePrompts";
+import MyPrompts from "./pages/MyPrompts";
 
 const queryClient = new QueryClient();
 
@@ -23,9 +25,9 @@ const App = () => (
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/prompts" element={<Dashboard />} />
+            <Route path="/prompts" element={<BrowsePrompts />} />
             <Route path="/prompts/create" element={<CreatePrompt />} />
-            <Route path="/my-prompts" element={<Dashboard />} />
+            <Route path="/my-prompts" element={<MyPrompts />} />
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/profile" element={<Dashboard />} />
             <Route path="/settings" element={<Dashboard />} />
