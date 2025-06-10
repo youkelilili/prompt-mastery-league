@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import CreatePrompt from "./pages/CreatePrompt";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/prompts" element={<Dashboard />} />
+            <Route path="/prompts/create" element={<CreatePrompt />} />
             <Route path="/my-prompts" element={<Dashboard />} />
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/profile" element={<Dashboard />} />
