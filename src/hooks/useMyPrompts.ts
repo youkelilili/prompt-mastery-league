@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { PromptWithAuthor } from '@/types/database';
+import { PromptWithAuthor, DatabasePrompt, DatabaseProfile } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useMyPrompts = () => {
@@ -15,24 +15,43 @@ export const useMyPrompts = () => {
     try {
       setLoading(true);
       
-      const { data: promptsData, error } = await supabase
+      // First, fetch the prompts
+      const { data: promptsData, error: promptsError } = await supabase
         .from('prompts')
-        .select(`
-          *,
-          profiles!prompts_author_id_fkey(*)
-        `)
+        .select('*')
         .eq('author_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (promptsError) throw promptsError;
 
-      // Transform the data to match our expected structure
-      const transformedPrompts = (promptsData || []).map(prompt => ({
+      if (!promptsData || promptsData.length === 0) {
+        setPrompts([]);
+        return;
+      }
+
+      // Get all unique author IDs
+      const authorIds = [...new Set(promptsData.map(prompt => prompt.author_id))];
+
+      // Fetch the profiles for these authors
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', authorIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of profiles by ID for easy lookup
+      const profilesMap = new Map(
+        (profilesData || []).map(profile => [profile.id, profile])
+      );
+
+      // Combine prompts with their authors
+      const transformedPrompts: PromptWithAuthor[] = promptsData.map(prompt => ({
         ...prompt,
-        author: prompt.profiles
-      }));
+        author: profilesMap.get(prompt.author_id) as DatabaseProfile
+      })).filter(prompt => prompt.author); // Filter out prompts without valid authors
 
-      setPrompts(transformedPrompts as PromptWithAuthor[]);
+      setPrompts(transformedPrompts);
     } catch (error) {
       console.error('Error fetching my prompts:', error);
     } finally {

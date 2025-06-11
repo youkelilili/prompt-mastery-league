@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { DatabasePrompt, PromptWithAuthor } from '@/types/database';
+import { DatabasePrompt, PromptWithAuthor, DatabaseProfile } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const usePrompts = () => {
@@ -13,16 +13,35 @@ export const usePrompts = () => {
     try {
       setLoading(true);
       
-      const { data: promptsData, error } = await supabase
+      // First, fetch the public prompts
+      const { data: promptsData, error: promptsError } = await supabase
         .from('prompts')
-        .select(`
-          *,
-          profiles!prompts_author_id_fkey(*)
-        `)
+        .select('*')
         .eq('is_public', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (promptsError) throw promptsError;
+
+      if (!promptsData || promptsData.length === 0) {
+        setPrompts([]);
+        return;
+      }
+
+      // Get all unique author IDs
+      const authorIds = [...new Set(promptsData.map(prompt => prompt.author_id))];
+
+      // Fetch the profiles for these authors
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', authorIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of profiles by ID for easy lookup
+      const profilesMap = new Map(
+        (profilesData || []).map(profile => [profile.id, profile])
+      );
 
       if (user) {
         // Check which prompts the user has liked
@@ -33,21 +52,21 @@ export const usePrompts = () => {
 
         const likedPromptIds = new Set(likedPrompts?.map(like => like.prompt_id) || []);
 
-        const promptsWithLikes = (promptsData || []).map(prompt => ({
+        const promptsWithLikes: PromptWithAuthor[] = promptsData.map(prompt => ({
           ...prompt,
-          author: prompt.profiles,
+          author: profilesMap.get(prompt.author_id) as DatabaseProfile,
           isLiked: likedPromptIds.has(prompt.id)
-        }));
+        })).filter(prompt => prompt.author); // Filter out prompts without valid authors
 
-        setPrompts(promptsWithLikes as PromptWithAuthor[]);
+        setPrompts(promptsWithLikes);
       } else {
         // Transform the data to match our expected structure
-        const transformedPrompts = (promptsData || []).map(prompt => ({
+        const transformedPrompts: PromptWithAuthor[] = promptsData.map(prompt => ({
           ...prompt,
-          author: prompt.profiles
-        }));
+          author: profilesMap.get(prompt.author_id) as DatabaseProfile
+        })).filter(prompt => prompt.author); // Filter out prompts without valid authors
 
-        setPrompts(transformedPrompts as PromptWithAuthor[]);
+        setPrompts(transformedPrompts);
       }
     } catch (error) {
       console.error('Error fetching prompts:', error);
