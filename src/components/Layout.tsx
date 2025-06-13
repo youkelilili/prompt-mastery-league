@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -109,9 +109,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white font-semibold">
-                          {user.username.charAt(0).toUpperCase()}
-                        </div>
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src={user.avatar || ''} alt={user.username} />
+                          <AvatarFallback className="gradient-primary text-white font-semibold">
+                            {user.username.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                         <span className="hidden md:block">{user.username}</span>
                       </Button>
                     </DropdownMenuTrigger>

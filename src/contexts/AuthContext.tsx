@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ error?: string }>;
   register: (username: string, email: string, password: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
 }
@@ -44,6 +45,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error in fetchProfile:', error);
       return null;
+    }
+  };
+
+  const refreshProfile = async () => {
+    if (user) {
+      const profile = await fetchProfile(user.id);
+      if (profile) {
+        setUser(profile as AuthUser);
+      }
     }
   };
 
@@ -151,6 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login,
       register,
       logout,
+      refreshProfile,
       isAuthenticated: !!session,
       loading
     }}>

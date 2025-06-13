@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Heart, User, Calendar, Tag } from 'lucide-react';
 import { PromptWithAuthor } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
@@ -72,8 +73,13 @@ export const PromptCard: React.FC<PromptCardProps> = ({
         </div>
         
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-          <div className="flex items-center space-x-1">
-            <User className="w-4 h-4" />
+          <div className="flex items-center space-x-2">
+            <Avatar className="w-6 h-6">
+              <AvatarImage src={prompt.author.avatar || ''} alt={prompt.author.username} />
+              <AvatarFallback className="text-xs">
+                {prompt.author.username.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <span>{prompt.author.username}</span>
             <Badge variant={getRoleBadgeVariant(prompt.author.role)} className="text-xs">
               {getRoleDisplayName(prompt.author.role)}
