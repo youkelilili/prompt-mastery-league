@@ -7,10 +7,11 @@ import { useAuth } from '@/contexts/AuthContext';
 export const usePrompts = () => {
   const [prompts, setPrompts] = useState<PromptWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const fetchPrompts = async () => {
     try {
+      console.log('Fetching prompts...');
       setLoading(true);
       
       // First, fetch the public prompts
@@ -20,7 +21,12 @@ export const usePrompts = () => {
         .eq('is_public', true)
         .order('created_at', { ascending: false });
 
-      if (promptsError) throw promptsError;
+      if (promptsError) {
+        console.error('Error fetching prompts:', promptsError);
+        throw promptsError;
+      }
+
+      console.log('Prompts data fetched:', promptsData?.length || 0);
 
       if (!promptsData || promptsData.length === 0) {
         setPrompts([]);
@@ -36,7 +42,10 @@ export const usePrompts = () => {
         .select('*')
         .in('id', authorIds);
 
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
 
       // Create a map of profiles by ID for easy lookup
       const profilesMap = new Map(
@@ -68,6 +77,8 @@ export const usePrompts = () => {
 
         setPrompts(transformedPrompts);
       }
+      
+      console.log('Prompts processed:', prompts.length);
     } catch (error) {
       console.error('Error fetching prompts:', error);
     } finally {
@@ -76,8 +87,11 @@ export const usePrompts = () => {
   };
 
   useEffect(() => {
-    fetchPrompts();
-  }, [user]);
+    // Only fetch when auth loading is complete
+    if (!authLoading) {
+      fetchPrompts();
+    }
+  }, [user, authLoading]);
 
   const toggleLike = async (promptId: string) => {
     if (!user) return;

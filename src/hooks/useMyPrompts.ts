@@ -7,12 +7,17 @@ import { useAuth } from '@/contexts/AuthContext';
 export const useMyPrompts = () => {
   const [prompts, setPrompts] = useState<PromptWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const fetchMyPrompts = async () => {
-    if (!user) return;
+    if (!user) {
+      setPrompts([]);
+      setLoading(false);
+      return;
+    }
 
     try {
+      console.log('Fetching my prompts for user:', user.id);
       setLoading(true);
       
       // First, fetch the prompts
@@ -22,7 +27,12 @@ export const useMyPrompts = () => {
         .eq('author_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (promptsError) throw promptsError;
+      if (promptsError) {
+        console.error('Error fetching my prompts:', promptsError);
+        throw promptsError;
+      }
+
+      console.log('My prompts data fetched:', promptsData?.length || 0);
 
       if (!promptsData || promptsData.length === 0) {
         setPrompts([]);
@@ -38,7 +48,10 @@ export const useMyPrompts = () => {
         .select('*')
         .in('id', authorIds);
 
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        throw profilesError;
+      }
 
       // Create a map of profiles by ID for easy lookup
       const profilesMap = new Map(
@@ -52,6 +65,7 @@ export const useMyPrompts = () => {
       })).filter(prompt => prompt.author); // Filter out prompts without valid authors
 
       setPrompts(transformedPrompts);
+      console.log('My prompts processed:', transformedPrompts.length);
     } catch (error) {
       console.error('Error fetching my prompts:', error);
     } finally {
@@ -60,8 +74,11 @@ export const useMyPrompts = () => {
   };
 
   useEffect(() => {
-    fetchMyPrompts();
-  }, [user]);
+    // Only fetch when auth loading is complete
+    if (!authLoading) {
+      fetchMyPrompts();
+    }
+  }, [user, authLoading]);
 
   const deletePrompt = async (promptId: string) => {
     try {

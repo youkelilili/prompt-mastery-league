@@ -31,7 +31,8 @@ const MyPrompts: React.FC = () => {
     }
   };
 
-  if (authLoading || loading) {
+  // Show loading only when auth is loading OR when prompts are loading but we have a user
+  if (authLoading || (loading && user)) {
     return (
       <Layout>
         <div className="flex justify-center items-center min-h-[400px]">
