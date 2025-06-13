@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface LayoutProps {
@@ -43,8 +44,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    console.log('Logging out...');
+    await logout();
     navigate('/login');
   };
 
@@ -92,6 +94,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {getRoleDisplayName(user.role)}
                   </Badge>
                   
+                  {/* Quick logout button for mobile/desktop */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    title="Logout"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="hidden sm:block">Logout</span>
+                  </Button>
+                  
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="flex items-center space-x-2">
@@ -120,6 +134,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                        <LogOut className="mr-2 h-4 w-4" />
                         Logout
                       </DropdownMenuItem>
                     </DropdownMenuContent>
