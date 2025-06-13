@@ -7,9 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const BrowsePrompts: React.FC = () => {
   const { prompts, loading, toggleLike } = usePrompts();
+  const { user, loading: authLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
@@ -25,7 +27,7 @@ const BrowsePrompts: React.FC = () => {
 
   const categories = [...new Set(prompts.map(p => p.category).filter(Boolean))];
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <Layout>
         <div className="flex justify-center items-center min-h-[400px]">

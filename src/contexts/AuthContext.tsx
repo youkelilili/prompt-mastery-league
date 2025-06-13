@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
@@ -49,6 +50,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('Setting up auth state listener...');
     
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.email || 'No session');
+      setSession(session);
+      
+      if (session?.user) {
+        fetchProfile(session.user.id).then(profile => {
+          if (profile) {
+            console.log('Profile loaded from initial session:', profile);
+            setUser(profile as AuthUser);
+          }
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+    });
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -57,7 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (session?.user) {
           console.log('User found in session, fetching profile...');
-          // Fetch profile data from our profiles table
           const profile = await fetchProfile(session.user.id);
           if (profile) {
             console.log('Setting user profile:', profile);
@@ -74,24 +92,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
       }
     );
-
-    // Check for existing session
-    console.log('Checking for existing session...');
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Existing session check result:', session?.user?.email || 'No session');
-      setSession(session);
-      if (session?.user) {
-        fetchProfile(session.user.id).then(profile => {
-          if (profile) {
-            console.log('Profile loaded from existing session:', profile);
-            setUser(profile as AuthUser);
-          }
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-      }
-    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -136,7 +136,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    console.log('Logging out...');
+    setLoading(true);
     await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+    setLoading(false);
   };
 
   return (
