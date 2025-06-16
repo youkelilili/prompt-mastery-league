@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +13,14 @@ const Dashboard: React.FC = () => {
 
   console.log('Dashboard render - user:', user, 'loading:', loading, 'isAuthenticated:', isAuthenticated);
 
+  useEffect(() => {
+    // Only redirect if we're not loading and definitely not authenticated
+    if (!loading && !isAuthenticated) {
+      console.log('User not authenticated, redirecting to login');
+      navigate('/login', { replace: true });
+    }
+  }, [loading, isAuthenticated, navigate]);
+
   // Show loading state while checking authentication
   if (loading) {
     return (
@@ -24,10 +33,8 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  // Redirect to login if not authenticated
+  // Don't render anything if not authenticated (will redirect)
   if (!isAuthenticated || !user) {
-    console.log('User not authenticated or user data missing, redirecting to login');
-    navigate('/login');
     return null;
   }
 
@@ -80,7 +87,7 @@ const Dashboard: React.FC = () => {
           <Card className="text-center">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-purple-600">
-                {user.total_likes}
+                {user.total_likes || 0}
               </CardTitle>
               <CardDescription>Total Likes Received</CardDescription>
             </CardHeader>
@@ -89,7 +96,7 @@ const Dashboard: React.FC = () => {
           <Card className="text-center">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-purple-600">
-                {user.prompt_count}
+                {user.prompt_count || 0}
               </CardTitle>
               <CardDescription>Prompts Created</CardDescription>
             </CardHeader>
@@ -121,12 +128,12 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <div className="w-full bg-purple-200 rounded-full h-3">
                 <div 
-                  className="gradient-primary h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, (user.total_likes / 10) * 100)}%` }}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 h-3 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, ((user.total_likes || 0) / 10) * 100)}%` }}
                 ></div>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                {user.total_likes}/10 likes needed for Prompt Master
+                {user.total_likes || 0}/10 likes needed for Prompt Master
               </p>
             </CardContent>
           </Card>

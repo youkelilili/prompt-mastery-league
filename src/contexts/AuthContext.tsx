@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error fetching profile:', error);
-        throw error;
+        return null;
       }
       
       console.log('Profile fetched successfully:', profile);
@@ -49,8 +49,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshProfile = async () => {
-    if (user) {
-      const profile = await fetchProfile(user.id);
+    if (session?.user) {
+      const profile = await fetchProfile(session.user.id);
       if (profile) {
         setUser(profile as AuthUser);
       }
@@ -60,50 +60,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('Setting up auth state listener...');
     
+    let mounted = true;
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.email || 'No session');
-      setSession(session);
-      
-      if (session?.user) {
-        fetchProfile(session.user.id).then(profile => {
-          if (profile) {
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        console.log('Initial session check:', initialSession?.user?.email || 'No session');
+        
+        if (!mounted) return;
+        
+        setSession(initialSession);
+        
+        if (initialSession?.user) {
+          const profile = await fetchProfile(initialSession.user.id);
+          if (mounted && profile) {
             console.log('Profile loaded from initial session:', profile);
             setUser(profile as AuthUser);
           }
+        }
+      } catch (error) {
+        console.error('Error during auth initialization:', error);
+      } finally {
+        if (mounted) {
           setLoading(false);
-        });
-      } else {
-        setLoading(false);
+        }
       }
-    });
+    };
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
-        setSession(session);
+      async (event, newSession) => {
+        console.log('Auth state changed:', event, newSession?.user?.email);
         
-        if (session?.user) {
+        if (!mounted) return;
+        
+        setSession(newSession);
+        
+        if (newSession?.user) {
           console.log('User found in session, fetching profile...');
-          const profile = await fetchProfile(session.user.id);
-          if (profile) {
-            console.log('Setting user profile:', profile);
-            setUser(profile as AuthUser);
-          } else {
-            console.log('No profile found for user');
-            setUser(null);
+          const profile = await fetchProfile(newSession.user.id);
+          if (mounted) {
+            if (profile) {
+              console.log('Setting user profile:', profile);
+              setUser(profile as AuthUser);
+            } else {
+              console.log('No profile found for user');
+              setUser(null);
+            }
           }
         } else {
           console.log('No user in session');
-          setUser(null);
+          if (mounted) {
+            setUser(null);
+          }
         }
         
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     );
 
-    return () => subscription.unsubscribe();
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -162,7 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       register,
       logout,
       refreshProfile,
-      isAuthenticated: !!session,
+      isAuthenticated: !!session && !!user,
       loading
     }}>
       {children}
