@@ -30,11 +30,13 @@ export const usePrompts = () => {
 
       if (!promptsData || promptsData.length === 0) {
         setPrompts([]);
+        setLoading(false);
         return;
       }
 
       // Get all unique author IDs
       const authorIds = [...new Set(promptsData.map(prompt => prompt.author_id))];
+      console.log('Author IDs to fetch:', authorIds);
 
       // Fetch the profiles for these authors
       const { data: profilesData, error: profilesError } = await supabase
@@ -47,10 +49,14 @@ export const usePrompts = () => {
         throw profilesError;
       }
 
+      console.log('Profiles data fetched:', profilesData?.length || 0);
+
       // Create a map of profiles by ID for easy lookup
       const profilesMap = new Map(
         (profilesData || []).map(profile => [profile.id, profile])
       );
+
+      console.log('Profiles map created with keys:', Array.from(profilesMap.keys()));
 
       if (user) {
         // Check which prompts the user has liked
@@ -61,26 +67,45 @@ export const usePrompts = () => {
 
         const likedPromptIds = new Set(likedPrompts?.map(like => like.prompt_id) || []);
 
-        const promptsWithLikes: PromptWithAuthor[] = promptsData.map(prompt => ({
-          ...prompt,
-          author: profilesMap.get(prompt.author_id) as DatabaseProfile,
-          isLiked: likedPromptIds.has(prompt.id)
-        })).filter(prompt => prompt.author); // Filter out prompts without valid authors
+        const promptsWithLikes: PromptWithAuthor[] = promptsData
+          .map(prompt => {
+            const author = profilesMap.get(prompt.author_id);
+            if (!author) {
+              console.warn('No author found for prompt:', prompt.id, 'author_id:', prompt.author_id);
+              return null;
+            }
+            return {
+              ...prompt,
+              author: author as DatabaseProfile,
+              isLiked: likedPromptIds.has(prompt.id)
+            };
+          })
+          .filter((prompt): prompt is PromptWithAuthor => prompt !== null);
 
+        console.log('Prompts with likes processed:', promptsWithLikes.length);
         setPrompts(promptsWithLikes);
       } else {
         // Transform the data to match our expected structure
-        const transformedPrompts: PromptWithAuthor[] = promptsData.map(prompt => ({
-          ...prompt,
-          author: profilesMap.get(prompt.author_id) as DatabaseProfile
-        })).filter(prompt => prompt.author); // Filter out prompts without valid authors
+        const transformedPrompts: PromptWithAuthor[] = promptsData
+          .map(prompt => {
+            const author = profilesMap.get(prompt.author_id);
+            if (!author) {
+              console.warn('No author found for prompt:', prompt.id, 'author_id:', prompt.author_id);
+              return null;
+            }
+            return {
+              ...prompt,
+              author: author as DatabaseProfile
+            };
+          })
+          .filter((prompt): prompt is PromptWithAuthor => prompt !== null);
 
+        console.log('Prompts processed without user:', transformedPrompts.length);
         setPrompts(transformedPrompts);
       }
-      
-      console.log('Prompts processed:', prompts.length);
     } catch (error) {
       console.error('Error fetching prompts:', error);
+      setPrompts([]);
     } finally {
       setLoading(false);
     }

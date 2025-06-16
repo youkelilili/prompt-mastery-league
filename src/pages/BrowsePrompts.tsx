@@ -27,12 +27,25 @@ const BrowsePrompts: React.FC = () => {
 
   const categories = [...new Set(prompts.map(p => p.category).filter(Boolean))];
 
-  // Show loading only when auth is loading OR when prompts are loading but we have a user
-  if (authLoading || (loading && user)) {
+  // Show loading only when auth is loading, or when we have no user and prompts are loading
+  if (authLoading || (!user && loading)) {
     return (
       <Layout>
         <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-lg">加载中...</div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="ml-4 text-lg">加载中...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  // If we have a user and loading is still true, show loading
+  if (user && loading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="ml-4 text-lg">加载中...</p>
         </div>
       </Layout>
     );
