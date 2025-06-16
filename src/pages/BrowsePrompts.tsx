@@ -3,6 +3,7 @@ import React from 'react';
 import { Layout } from '@/components/Layout';
 import { PromptCard } from '@/components/PromptCard';
 import { usePrompts } from '@/hooks/usePrompts';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useState } from 'react';
@@ -12,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const BrowsePrompts: React.FC = () => {
   const { prompts, loading, toggleLike } = usePrompts();
   const { user, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
@@ -33,7 +35,7 @@ const BrowsePrompts: React.FC = () => {
       <Layout>
         <div className="flex justify-center items-center min-h-[400px]">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="ml-4 text-lg">加载中...</p>
+          <p className="ml-4 text-lg">{t('browse.loading')}</p>
         </div>
       </Layout>
     );
@@ -45,7 +47,7 @@ const BrowsePrompts: React.FC = () => {
       <Layout>
         <div className="flex justify-center items-center min-h-[400px]">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="ml-4 text-lg">加载中...</p>
+          <p className="ml-4 text-lg">{t('browse.loading')}</p>
         </div>
       </Layout>
     );
@@ -55,9 +57,9 @@ const BrowsePrompts: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-2">浏览 Prompts</h1>
+          <h1 className="text-3xl font-bold mb-2">{t('browse.title')}</h1>
           <p className="text-muted-foreground">
-            发现社区中的优秀 Prompts
+            {t('browse.subtitle')}
           </p>
         </div>
 
@@ -66,7 +68,7 @@ const BrowsePrompts: React.FC = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="搜索 prompts、作者..."
+              placeholder={t('browse.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -76,10 +78,10 @@ const BrowsePrompts: React.FC = () => {
             <Filter className="w-4 h-4 text-gray-400" />
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="选择分类" />
+                <SelectValue placeholder={t('browse.selectCategory')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">所有分类</SelectItem>
+                <SelectItem value="all">{t('browse.allCategories')}</SelectItem>
                 {categories.map(category => (
                   <SelectItem key={category} value={category || ''}>
                     {category}
@@ -92,15 +94,15 @@ const BrowsePrompts: React.FC = () => {
 
         {/* Results Count */}
         <div className="text-sm text-muted-foreground">
-          找到 {filteredPrompts.length} 个 Prompts
+          {t('browse.resultsCount').replace('{count}', filteredPrompts.length.toString())}
         </div>
 
         {/* Prompts Grid */}
         {filteredPrompts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-lg text-muted-foreground">没有找到匹配的 Prompts</p>
+            <p className="text-lg text-muted-foreground">{t('browse.noResults')}</p>
             <p className="text-sm text-muted-foreground mt-2">
-              尝试调整搜索条件或浏览其他分类
+              {t('browse.noResultsHint')}
             </p>
           </div>
         ) : (
