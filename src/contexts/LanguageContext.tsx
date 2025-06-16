@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'zh' | 'en';
@@ -12,13 +11,14 @@ interface LanguageContextType {
 const translations = {
   zh: {
     // Navigation
-    'nav.dashboard': 'Dashboard',
-    'nav.browsePrompts': 'Browse Prompts',
-    'nav.myPrompts': 'My Prompts',
-    'nav.adminPanel': 'Admin Panel',
-    'nav.profile': 'Profile',
-    'nav.settings': 'Settings',
-    'nav.logout': 'Logout',
+    'nav.dashboard': '仪表盘',
+    'nav.browsePrompts': '浏览 Prompts',
+    'nav.myPrompts': '我的 Prompts',
+    'nav.adminPanel': '管理面板',
+    'nav.profile': '个人资料',
+    'nav.settings': '设置',
+    'nav.logout': '退出登录',
+    'nav.createPrompt': '创建新 Prompt',
     
     // Browse Prompts Page
     'browse.title': '浏览 Prompts',
@@ -38,7 +38,12 @@ const translations = {
     
     // General
     'general.likes': 'likes',
-    'general.prompts': 'prompts'
+    'general.prompts': 'prompts',
+    
+    // Dashboard
+    'dashboard.createPromptDesc': '分享你的创意 Prompts',
+    'dashboard.browsePromptDesc': '发现社区优秀 Prompts',
+    'dashboard.myPromptDesc': '管理和编辑你创建的 Prompts'
   },
   en: {
     // Navigation
@@ -49,6 +54,7 @@ const translations = {
     'nav.profile': 'Profile',
     'nav.settings': 'Settings',
     'nav.logout': 'Logout',
+    'nav.createPrompt': 'Create New Prompt',
     
     // Browse Prompts Page
     'browse.title': 'Browse Prompts',
@@ -68,7 +74,12 @@ const translations = {
     
     // General
     'general.likes': 'likes',
-    'general.prompts': 'prompts'
+    'general.prompts': 'prompts',
+    
+    // Dashboard
+    'dashboard.createPromptDesc': 'Share your creative prompts with the community',
+    'dashboard.browsePromptDesc': 'Discover amazing prompts from other creators',
+    'dashboard.myPromptDesc': 'Manage and edit your created prompts'
   }
 };
 
@@ -92,12 +103,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const t = (key: string): string => {
     const keys = key.split('.');
     let value: any = translations[language];
-    
     for (const k of keys) {
       value = value?.[k];
     }
-    
-    return value || key;
+    return value || keys[keys.length - 1];
   };
 
   return (

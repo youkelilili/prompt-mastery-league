@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/Layout';
@@ -6,10 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Dashboard: React.FC = () => {
   const { user, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   console.log('Dashboard render - user:', user, 'loading:', loading, 'isAuthenticated:', isAuthenticated);
 
@@ -145,10 +146,10 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <span className="text-2xl">✨</span>
-                <span>Create New Prompt</span>
+                <span>{t('nav.createPrompt') || '创建新 Prompt'}</span>
               </CardTitle>
               <CardDescription>
-                Share your creative prompts with the community
+                {t('dashboard.createPromptDesc') || '分享你的创意 Prompts'}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -157,10 +158,10 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <span className="text-2xl">🔍</span>
-                <span>Browse Prompts</span>
+                <span>{t('nav.browsePrompts')}</span>
               </CardTitle>
               <CardDescription>
-                Discover amazing prompts from other creators
+                {t('dashboard.browsePromptDesc') || '发现社区优秀 Prompts'}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -169,10 +170,10 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <span className="text-2xl">📚</span>
-                <span>My Prompts</span>
+                <span>{t('nav.myPrompts')}</span>
               </CardTitle>
               <CardDescription>
-                Manage and edit your created prompts
+                {t('dashboard.myPromptDesc') || '管理和编辑你创建的 Prompts'}
               </CardDescription>
             </CardHeader>
           </Card>

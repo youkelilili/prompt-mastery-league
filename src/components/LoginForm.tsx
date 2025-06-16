@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,75 +16,194 @@ export const LoginForm: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+    
     setLoading(true);
-
     try {
-      const success = await login(loginData.email, loginData.password);
-      if (success) {
+      const { error } = await login(loginData.email, loginData.password);
+      if (!error) {
         toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
+          title: "登录成功",
+          description: "欢迎回来！",
         });
         navigate('/dashboard');
       } else {
         toast({
-          title: "Login failed",
-          description: "Invalid email or password. Try: admin@example.com / password",
+          title: "登录失败",
+          description: "邮箱或密码错误",
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "An error occurred during login.",
+        title: "错误",
+        description: "登录过程中发生错误",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [loginData, login, toast, navigate, loading]);
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
+    if (loading) return;
+    
     if (registerData.password !== registerData.confirmPassword) {
       toast({
-        title: "Password mismatch",
-        description: "Passwords do not match.",
+        title: "密码不匹配",
+        description: "两次输入的密码不一致",
         variant: "destructive",
       });
-      setLoading(false);
       return;
     }
 
+    setLoading(true);
     try {
-      const success = await register(registerData.username, registerData.email, registerData.password);
-      if (success) {
+      const { error } = await register(registerData.username, registerData.email, registerData.password);
+      if (!error) {
         toast({
-          title: "Account created!",
-          description: "Your account has been created successfully.",
+          title: "注册成功",
+          description: "账号已创建成功",
         });
         navigate('/dashboard');
       } else {
         toast({
-          title: "Registration failed",
-          description: "Username or email already exists.",
+          title: "注册失败",
+          description: "用户名或邮箱已存在",
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "An error occurred during registration.",
+        title: "错误",
+        description: "注册过程中发生错误",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [registerData, register, toast, navigate, loading]);
+
+  const handleLoginInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLoginData(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  const handleRegisterInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setRegisterData(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  const loginForm = useMemo(() => (
+    <form onSubmit={handleLogin}>
+      <CardHeader>
+        <CardTitle>欢迎回来</CardTitle>
+        <CardDescription>
+          请输入您的账号信息
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">邮箱</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="admin@example.com"
+            value={loginData.email}
+            onChange={handleLoginInputChange}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">密码</Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="password"
+            value={loginData.password}
+            onChange={handleLoginInputChange}
+            required
+          />
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button type="submit" className="w-full gradient-primary" disabled={loading}>
+          {loading ? '登录中...' : '登录'}
+        </Button>
+      </CardFooter>
+    </form>
+  ), [loginData, handleLogin, handleLoginInputChange, loading]);
+
+  const registerForm = useMemo(() => (
+    <form onSubmit={handleRegister}>
+      <CardHeader>
+        <CardTitle>创建账号</CardTitle>
+        <CardDescription>
+          请填写以下信息创建新账号
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="username">用户名</Label>
+          <Input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="请输入用户名"
+            value={registerData.username}
+            onChange={handleRegisterInputChange}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="register-email">邮箱</Label>
+          <Input
+            id="register-email"
+            name="email"
+            type="email"
+            placeholder="请输入邮箱"
+            value={registerData.email}
+            onChange={handleRegisterInputChange}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="register-password">密码</Label>
+          <Input
+            id="register-password"
+            name="password"
+            type="password"
+            placeholder="请输入密码"
+            value={registerData.password}
+            onChange={handleRegisterInputChange}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">确认密码</Label>
+          <Input
+            id="confirm-password"
+            name="confirmPassword"
+            type="password"
+            placeholder="请再次输入密码"
+            value={registerData.confirmPassword}
+            onChange={handleRegisterInputChange}
+            required
+          />
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button type="submit" className="w-full gradient-primary" disabled={loading}>
+          {loading ? '创建中...' : '创建账号'}
+        </Button>
+      </CardFooter>
+    </form>
+  ), [registerData, handleRegister, handleRegisterInputChange, loading]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-purple-50 p-4">
@@ -95,120 +213,21 @@ export const LoginForm: React.FC = () => {
             PromptHub
           </h1>
           <p className="text-muted-foreground">
-            Join the community of prompt creators
+            加入提示词创作者社区
           </p>
         </div>
 
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
+              <TabsTrigger value="login">登录</TabsTrigger>
+              <TabsTrigger value="register">注册</TabsTrigger>
             </TabsList>
-            
             <TabsContent value="login">
-              <form onSubmit={handleLogin}>
-                <CardHeader>
-                  <CardTitle>Welcome back</CardTitle>
-                  <CardDescription>
-                    Enter your credentials to access your account
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="admin@example.com"
-                      value={loginData.email}
-                      onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="password"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Demo accounts: admin@example.com, john@example.com, expert@example.com (password: password)
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" className="w-full gradient-primary" disabled={loading}>
-                    {loading ? 'Signing in...' : 'Sign in'}
-                  </Button>
-                </CardFooter>
-              </form>
+              {loginForm}
             </TabsContent>
-            
             <TabsContent value="register">
-              <form onSubmit={handleRegister}>
-                <CardHeader>
-                  <CardTitle>Create account</CardTitle>
-                  <CardDescription>
-                    Join our community of prompt creators
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      type="text"
-                      placeholder="your_username"
-                      value={registerData.username}
-                      onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
-                    <Input
-                      id="register-email"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={registerData.email}
-                      onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
-                    <Input
-                      id="register-password"
-                      type="password"
-                      placeholder="Create a strong password"
-                      value={registerData.password}
-                      onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="Confirm your password"
-                      value={registerData.confirmPassword}
-                      onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
-                      required
-                    />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button type="submit" className="w-full gradient-primary" disabled={loading}>
-                    {loading ? 'Creating account...' : 'Create account'}
-                  </Button>
-                </CardFooter>
-              </form>
+              {registerForm}
             </TabsContent>
           </Tabs>
         </Card>

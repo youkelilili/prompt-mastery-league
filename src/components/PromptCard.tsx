@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -74,10 +73,10 @@ export const PromptCard: React.FC<PromptCardProps> = ({
         
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
           <div className="flex items-center space-x-2">
-            <Avatar className="w-6 h-6">
-              <AvatarImage src={prompt.author.avatar || ''} alt={prompt.author.username} />
-              <AvatarFallback className="text-xs">
-                {prompt.author.username.charAt(0).toUpperCase()}
+            <Avatar className="w-10 h-10">
+              <AvatarImage src={prompt.author.avatar || undefined} alt={prompt.author.username} />
+              <AvatarFallback className="gradient-primary text-white font-semibold">
+                {prompt.author.username ? prompt.author.username.charAt(0).toUpperCase() : '?'}
               </AvatarFallback>
             </Avatar>
             <span>{prompt.author.username}</span>

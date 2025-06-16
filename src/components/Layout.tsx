@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -99,18 +98,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <Badge variant={getRoleBadgeVariant(user.role)}>
                     {getRoleDisplayName(user.role)}
                   </Badge>
-                  
-                  {/* Quick logout button for mobile/desktop */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    title="Logout"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="hidden sm:block">{t('nav.logout')}</span>
-                  </Button>
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
