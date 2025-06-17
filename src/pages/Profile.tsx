@@ -5,11 +5,13 @@ import { AvatarUpload } from '@/components/AvatarUpload';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Calendar, Heart, FileText } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -50,11 +52,11 @@ const Profile: React.FC = () => {
   const getRoleDisplayName = (role: string) => {
     switch (role) {
       case 'administrator':
-        return '管理员';
+        return t('role.admin');
       case 'prompt_master':
-        return 'Prompt大师';
+        return t('role.promptMaster');
       default:
-        return '用户';
+        return t('role.user');
     }
   };
 
@@ -66,7 +68,7 @@ const Profile: React.FC = () => {
     return (
       <Layout>
         <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-lg">请先登录</div>
+          <div className="text-lg">{t('profile.loginRequired')}</div>
         </div>
       </Layout>
     );
@@ -76,9 +78,9 @@ const Profile: React.FC = () => {
     <Layout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-2">个人资料</h1>
+          <h1 className="text-3xl font-bold mb-2">{t('profile.title')}</h1>
           <p className="text-muted-foreground">
-            管理您的个人信息和头像
+            {t('profile.subtitle')}
           </p>
         </div>
 
@@ -88,10 +90,10 @@ const Profile: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <User className="w-5 h-5" />
-                <span>头像设置</span>
+                <span>{t('profile.avatarSettings')}</span>
               </CardTitle>
               <CardDescription>
-                上传或更换您的个人头像
+                {t('profile.avatarDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center">
@@ -107,22 +109,22 @@ const Profile: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <User className="w-5 h-5" />
-                <span>基本信息</span>
+                <span>{t('profile.basicInfo')}</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">用户名</label>
+                <label className="text-sm font-medium text-muted-foreground">{t('profile.username')}</label>
                 <p className="text-lg">{user.username}</p>
               </div>
               
               <div>
-                <label className="text-sm font-medium text-muted-foreground">邮箱</label>
+                <label className="text-sm font-medium text-muted-foreground">{t('profile.email')}</label>
                 <p className="text-lg">{user.email}</p>
               </div>
               
               <div>
-                <label className="text-sm font-medium text-muted-foreground">角色</label>
+                <label className="text-sm font-medium text-muted-foreground">{t('profile.role')}</label>
                 <div className="mt-1">
                   <Badge variant={getRoleBadgeVariant(user.role)}>
                     {getRoleDisplayName(user.role)}
@@ -131,7 +133,7 @@ const Profile: React.FC = () => {
               </div>
               
               <div>
-                <label className="text-sm font-medium text-muted-foreground">注册时间</label>
+                <label className="text-sm font-medium text-muted-foreground">{t('profile.joinDate')}</label>
                 <div className="flex items-center space-x-2 mt-1">
                   <Calendar className="w-4 h-4" />
                   <span>{formatDate(user.created_at)}</span>
@@ -144,9 +146,9 @@ const Profile: React.FC = () => {
         {/* Stats Card */}
         <Card>
           <CardHeader>
-            <CardTitle>统计信息</CardTitle>
+            <CardTitle>{t('profile.stats')}</CardTitle>
             <CardDescription>
-              您在 PromptHub 的活动统计
+              {t('profile.statsDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -156,7 +158,7 @@ const Profile: React.FC = () => {
                   <Heart className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">获得的点赞</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.totalLikes')}</p>
                   <p className="text-2xl font-bold">{user.total_likes}</p>
                 </div>
               </div>
@@ -166,7 +168,7 @@ const Profile: React.FC = () => {
                   <FileText className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">创建的 Prompts</p>
+                  <p className="text-sm text-muted-foreground">{t('profile.totalPrompts')}</p>
                   <p className="text-2xl font-bold">{user.prompt_count}</p>
                 </div>
               </div>
