@@ -27,5 +27,5 @@ export interface DatabaseProfile {
 
 export interface PromptWithAuthor extends DatabasePrompt {
   author: DatabaseProfile;
-  isLiked?: boolean;
+  isLiked: boolean; // Changed from optional to required
 }
