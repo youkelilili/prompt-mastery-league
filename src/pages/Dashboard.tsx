@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Layout } from '@/components/Layout';
@@ -28,7 +29,7 @@ const Dashboard: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-purple-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+          <p className="mt-4 text-muted-foreground">{t('dashboard.loadingDashboard')}</p>
         </div>
       </div>
     );
@@ -56,12 +57,23 @@ const Dashboard: React.FC = () => {
     if (user.role === 'user') {
       const likesNeeded = Math.max(0, 10 - user.total_likes);
       if (likesNeeded > 0) {
-        return `Get ${likesNeeded} more likes to become a Prompt Master!`;
+        return t('dashboard.upgradeInfo').replace('{count}', likesNeeded.toString());
       } else {
-        return 'Congratulations! You\'re eligible for Prompt Master status!';
+        return t('dashboard.eligible');
       }
     }
     return null;
+  };
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'administrator':
+        return t('role.admin');
+      case 'prompt_master':
+        return t('role.promptMaster');
+      default:
+        return t('role.user');
+    }
   };
 
   return (
@@ -70,15 +82,14 @@ const Dashboard: React.FC = () => {
         {/* Welcome Section */}
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">
-            Welcome back, {user.username}!
+            {t('dashboard.welcome').replace('{username}', user.username)}
           </h1>
           <p className="text-xl text-muted-foreground mb-6">
-            Ready to create and share amazing prompts?
+            {t('dashboard.subtitle')}
           </p>
           <div className="flex justify-center">
             <Badge className={`text-lg px-4 py-2 ${getRoleColor(user.role)}`}>
-              {user.role === 'administrator' ? 'Administrator' : 
-               user.role === 'prompt_master' ? 'Prompt Master' : 'User'}
+              {getRoleDisplayName(user.role)}
             </Badge>
           </div>
         </div>
@@ -90,7 +101,7 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-3xl font-bold text-purple-600">
                 {user.total_likes || 0}
               </CardTitle>
-              <CardDescription>Total Likes Received</CardDescription>
+              <CardDescription>{t('dashboard.totalLikes')}</CardDescription>
             </CardHeader>
           </Card>
 
@@ -99,17 +110,16 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-3xl font-bold text-purple-600">
                 {user.prompt_count || 0}
               </CardTitle>
-              <CardDescription>Prompts Created</CardDescription>
+              <CardDescription>{t('dashboard.promptsCreated')}</CardDescription>
             </CardHeader>
           </Card>
 
           <Card className="text-center">
             <CardHeader>
               <CardTitle className="text-3xl font-bold text-purple-600">
-                {user.role === 'administrator' ? 'Admin' : 
-                 user.role === 'prompt_master' ? 'Master' : 'User'}
+                {getRoleDisplayName(user.role)}
               </CardTitle>
-              <CardDescription>Current Level</CardDescription>
+              <CardDescription>{t('dashboard.currentLevel')}</CardDescription>
             </CardHeader>
           </Card>
         </div>
@@ -120,7 +130,7 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <span>🏆</span>
-                <span>Level Up Progress</span>
+                <span>{t('dashboard.levelProgress')}</span>
               </CardTitle>
               <CardDescription>
                 {getUpgradeInfo()}
@@ -134,7 +144,7 @@ const Dashboard: React.FC = () => {
                 ></div>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                {user.total_likes || 0}/10 likes needed for Prompt Master
+                {user.total_likes || 0}/10 {t('general.likes')} needed for {t('role.promptMaster')}
               </p>
             </CardContent>
           </Card>
@@ -146,10 +156,10 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <span className="text-2xl">✨</span>
-                <span>{t('nav.createPrompt') || '创建新 Prompt'}</span>
+                <span>{t('nav.createPrompt')}</span>
               </CardTitle>
               <CardDescription>
-                {t('dashboard.createPromptDesc') || '分享你的创意 Prompts'}
+                {t('dashboard.createPromptDesc')}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -161,7 +171,7 @@ const Dashboard: React.FC = () => {
                 <span>{t('nav.browsePrompts')}</span>
               </CardTitle>
               <CardDescription>
-                {t('dashboard.browsePromptDesc') || '发现社区优秀 Prompts'}
+                {t('dashboard.browsePromptDesc')}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -173,7 +183,7 @@ const Dashboard: React.FC = () => {
                 <span>{t('nav.myPrompts')}</span>
               </CardTitle>
               <CardDescription>
-                {t('dashboard.myPromptDesc') || '管理和编辑你创建的 Prompts'}
+                {t('dashboard.myPromptDesc')}
               </CardDescription>
             </CardHeader>
           </Card>
@@ -185,10 +195,10 @@ const Dashboard: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-red-800">
                 <span>⚡</span>
-                <span>Administrator Panel</span>
+                <span>{t('dashboard.adminPanel')}</span>
               </CardTitle>
               <CardDescription>
-                Manage users, prompts, and system settings
+                {t('dashboard.manageSystem')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -196,7 +206,7 @@ const Dashboard: React.FC = () => {
                 onClick={() => navigate('/admin')}
                 className="bg-red-600 hover:bg-red-700"
               >
-                Open Admin Panel
+                {t('dashboard.openAdmin')}
               </Button>
             </CardContent>
           </Card>

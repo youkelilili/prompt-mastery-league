@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'zh' | 'en';
@@ -32,18 +33,30 @@ const translations = {
     'browse.loading': '加载中...',
     
     // User roles
-    'role.admin': 'Admin',
-    'role.promptMaster': 'Prompt Master',
-    'role.user': 'User',
+    'role.admin': '管理员',
+    'role.promptMaster': 'Prompt 大师',
+    'role.user': '用户',
     
     // General
-    'general.likes': 'likes',
-    'general.prompts': 'prompts',
+    'general.likes': '点赞',
+    'general.prompts': '提示词',
     
     // Dashboard
+    'dashboard.welcome': '欢迎回来，{username}！',
+    'dashboard.subtitle': '准备好创建和分享精彩的 Prompts 了吗？',
     'dashboard.createPromptDesc': '分享你的创意 Prompts',
     'dashboard.browsePromptDesc': '发现社区优秀 Prompts',
-    'dashboard.myPromptDesc': '管理和编辑你创建的 Prompts'
+    'dashboard.myPromptDesc': '管理和编辑你创建的 Prompts',
+    'dashboard.totalLikes': '总获赞数',
+    'dashboard.promptsCreated': '创建的 Prompts',
+    'dashboard.currentLevel': '当前等级',
+    'dashboard.levelProgress': '等级进度',
+    'dashboard.upgradeInfo': '再获得 {count} 个赞即可成为 Prompt 大师！',
+    'dashboard.eligible': '恭喜！您已符合 Prompt 大师资格！',
+    'dashboard.adminPanel': '管理员面板',
+    'dashboard.manageSystem': '管理用户、prompts 和系统设置',
+    'dashboard.openAdmin': '打开管理面板',
+    'dashboard.loadingDashboard': '加载仪表盘...'
   },
   en: {
     // Navigation
@@ -77,9 +90,21 @@ const translations = {
     'general.prompts': 'prompts',
     
     // Dashboard
+    'dashboard.welcome': 'Welcome back, {username}!',
+    'dashboard.subtitle': 'Ready to create and share amazing prompts?',
     'dashboard.createPromptDesc': 'Share your creative prompts with the community',
     'dashboard.browsePromptDesc': 'Discover amazing prompts from other creators',
-    'dashboard.myPromptDesc': 'Manage and edit your created prompts'
+    'dashboard.myPromptDesc': 'Manage and edit your created prompts',
+    'dashboard.totalLikes': 'Total Likes Received',
+    'dashboard.promptsCreated': 'Prompts Created',
+    'dashboard.currentLevel': 'Current Level',
+    'dashboard.levelProgress': 'Level Up Progress',
+    'dashboard.upgradeInfo': 'Get {count} more likes to become a Prompt Master!',
+    'dashboard.eligible': 'Congratulations! You\'re eligible for Prompt Master status!',
+    'dashboard.adminPanel': 'Administrator Panel',
+    'dashboard.manageSystem': 'Manage users, prompts, and system settings',
+    'dashboard.openAdmin': 'Open Admin Panel',
+    'dashboard.loadingDashboard': 'Loading dashboard...'
   }
 };
 
@@ -96,6 +121,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
+    console.log('Setting language to:', lang);
     setLanguage(lang);
     localStorage.setItem('language', lang);
   };
