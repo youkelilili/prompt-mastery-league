@@ -95,7 +95,8 @@ export const usePrompts = () => {
             }
             return {
               ...prompt,
-              author: author as DatabaseProfile
+              author: author as DatabaseProfile,
+              isLiked: false // Default to false when user is not logged in
             };
           })
           .filter((prompt): prompt is PromptWithAuthor => prompt !== null);
