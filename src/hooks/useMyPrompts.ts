@@ -58,10 +58,11 @@ export const useMyPrompts = () => {
         (profilesData || []).map(profile => [profile.id, profile])
       );
 
-      // Combine prompts with their authors
+      // Combine prompts with their authors and add isLiked property
       const transformedPrompts: PromptWithAuthor[] = promptsData.map(prompt => ({
         ...prompt,
-        author: profilesMap.get(prompt.author_id) as DatabaseProfile
+        author: profilesMap.get(prompt.author_id) as DatabaseProfile,
+        isLiked: false // For user's own prompts, isLiked is not relevant but required by interface
       })).filter(prompt => prompt.author); // Filter out prompts without valid authors
 
       setPrompts(transformedPrompts);
