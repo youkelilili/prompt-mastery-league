@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -13,7 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import { LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { LanguageToggle } from '@/components/LanguageToggle';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -91,8 +91,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <LanguageToggle />
-              
               {user && (
                 <div className="flex items-center space-x-3">
                   <Badge variant={getRoleBadgeVariant(user.role)}>
