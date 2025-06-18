@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { PromptCard } from '@/components/PromptCard';
@@ -9,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const BrowsePrompts: React.FC = () => {
   const { prompts, loading, toggleLike } = usePrompts();
@@ -16,6 +16,7 @@ const BrowsePrompts: React.FC = () => {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const navigate = useNavigate();
 
   const filteredPrompts = prompts.filter(prompt => {
     const matchesSearch = prompt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -28,6 +29,10 @@ const BrowsePrompts: React.FC = () => {
   });
 
   const categories = [...new Set(prompts.map(p => p.category).filter(Boolean))];
+
+  const handleViewDetails = (promptId: string) => {
+    navigate(`/prompts/${promptId}`);
+  };
 
   // Show loading only when auth is loading, or when we have no user and prompts are loading
   if (authLoading || (!user && loading)) {
@@ -111,7 +116,9 @@ const BrowsePrompts: React.FC = () => {
               <PromptCard
                 key={prompt.id}
                 prompt={prompt}
-                onLike={toggleLike}
+                onLike={handleLike}
+                onViewDetails={handleViewDetails}
+                showActions={true}
               />
             ))}
           </div>

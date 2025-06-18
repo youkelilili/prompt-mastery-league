@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Heart, User, Calendar, Tag } from 'lucide-react';
+import { Heart, User, Calendar, Tag, MessageCircle } from 'lucide-react';
 import { PromptWithAuthor } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -12,13 +13,15 @@ interface PromptCardProps {
   onLike?: (promptId: string) => void;
   onDelete?: (promptId: string) => void;
   showActions?: boolean;
+  onViewDetails?: (promptId: string) => void;
 }
 
 export const PromptCard: React.FC<PromptCardProps> = ({ 
   prompt, 
   onLike, 
   onDelete,
-  showActions = true 
+  showActions = true,
+  onViewDetails
 }) => {
   const { user } = useAuth();
 
@@ -58,16 +61,29 @@ export const PromptCard: React.FC<PromptCardProps> = ({
               <CardDescription>{prompt.description}</CardDescription>
             )}
           </div>
-          {showActions && onLike && user && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onLike(prompt.id)}
-              className={`ml-2 ${prompt.isLiked ? 'text-red-500' : 'text-gray-500'}`}
-            >
-              <Heart className={`w-4 h-4 mr-1 ${prompt.isLiked ? 'fill-current' : ''}`} />
-              {prompt.likes_count}
-            </Button>
+          {showActions && (
+            <div className="flex items-center space-x-2 ml-2">
+              {onLike && user && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onLike(prompt.id)}
+                  className={`${prompt.isLiked ? 'text-red-500' : 'text-gray-500'}`}
+                >
+                  <Heart className={`w-4 h-4 mr-1 ${prompt.isLiked ? 'fill-current' : ''}`} />
+                  {prompt.likes_count}
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onViewDetails?.(prompt.id)}
+                className="text-gray-500"
+              >
+                <MessageCircle className="w-4 h-4 mr-1" />
+                {prompt.comments_count || 0}
+              </Button>
+            </div>
           )}
         </div>
         

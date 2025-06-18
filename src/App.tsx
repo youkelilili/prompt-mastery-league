@@ -10,6 +10,7 @@ import Dashboard from '@/pages/Dashboard';
 import BrowsePrompts from '@/pages/BrowsePrompts';
 import MyPrompts from '@/pages/MyPrompts';
 import CreatePrompt from '@/pages/CreatePrompt';
+import PromptDetail from '@/pages/PromptDetail';
 import NotFound from '@/pages/NotFound';
 import Profile from '@/pages/Profile';
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/prompts" element={<BrowsePrompts />} />
+              <Route path="/prompts/:id" element={<PromptDetail />} />
               <Route path="/my-prompts" element={<MyPrompts />} />
               <Route path="/prompts/create" element={<CreatePrompt />} />
               <Route path="/profile" element={<Profile />} />

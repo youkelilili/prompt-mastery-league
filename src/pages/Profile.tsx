@@ -4,19 +4,30 @@ import { Layout } from '@/components/Layout';
 import { AvatarUpload } from '@/components/AvatarUpload';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Calendar, Heart, FileText } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { User, Calendar, Heart, FileText, Edit, Save, X } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [bio, setBio] = useState<string>('');
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [tempBio, setTempBio] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (user?.avatar) {
       setAvatarUrl(user.avatar);
+    }
+    if (user?.bio) {
+      setBio(user.bio);
     }
   }, [user]);
 
@@ -32,10 +43,49 @@ const Profile: React.FC = () => {
         .single();
       
       if (profile) {
-        // Update the user context with new avatar
         console.log('Profile updated with new avatar:', profile.avatar);
       }
     }
+  };
+
+  const handleEditBio = () => {
+    setTempBio(bio);
+    setIsEditingBio(true);
+  };
+
+  const handleSaveBio = async () => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ bio: tempBio })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setBio(tempBio);
+      setIsEditingBio(false);
+      toast({
+        title: '成功',
+        description: '个人介绍已更新',
+      });
+    } catch (error) {
+      console.error('Error updating bio:', error);
+      toast({
+        title: '错误',
+        description: '更新失败，请重试',
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setTempBio('');
+    setIsEditingBio(false);
   };
 
   const getRoleBadgeVariant = (role: string) => {
@@ -142,6 +192,64 @@ const Profile: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Bio Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>个人介绍</span>
+              {!isEditingBio && (
+                <Button variant="outline" size="sm" onClick={handleEditBio}>
+                  <Edit className="w-4 h-4 mr-2" />
+                  编辑
+                </Button>
+              )}
+            </CardTitle>
+            <CardDescription>
+              分享一些关于你自己的信息
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isEditingBio ? (
+              <div className="space-y-4">
+                <Textarea
+                  value={tempBio}
+                  onChange={(e) => setTempBio(e.target.value)}
+                  placeholder="写一些关于你自己的介绍..."
+                  rows={4}
+                />
+                <div className="flex justify-end space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleCancelEdit}
+                    disabled={isSaving}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    取消
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={handleSaveBio}
+                    disabled={isSaving}
+                    className="gradient-primary"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    {isSaving ? '保存中...' : '保存'}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="min-h-[80px] flex items-center">
+                {bio ? (
+                  <p className="whitespace-pre-wrap">{bio}</p>
+                ) : (
+                  <p className="text-muted-foreground italic">还没有添加个人介绍</p>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Stats Card */}
         <Card>

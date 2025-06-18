@@ -12,6 +12,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar: string | null
+          bio: string | null
           created_at: string
           email: string
           id: string
@@ -23,6 +24,7 @@ export type Database = {
         }
         Insert: {
           avatar?: string | null
+          bio?: string | null
           created_at?: string
           email: string
           id: string
@@ -34,6 +36,7 @@ export type Database = {
         }
         Update: {
           avatar?: string | null
+          bio?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -44,6 +47,41 @@ export type Database = {
           username?: string
         }
         Relationships: []
+      }
+      prompt_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          prompt_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          prompt_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          prompt_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_comments_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prompt_likes: {
         Row: {
@@ -78,6 +116,7 @@ export type Database = {
         Row: {
           author_id: string
           category: string | null
+          comments_count: number | null
           content: string
           created_at: string
           description: string | null
@@ -91,6 +130,7 @@ export type Database = {
         Insert: {
           author_id: string
           category?: string | null
+          comments_count?: number | null
           content: string
           created_at?: string
           description?: string | null
@@ -104,6 +144,7 @@ export type Database = {
         Update: {
           author_id?: string
           category?: string | null
+          comments_count?: number | null
           content?: string
           created_at?: string
           description?: string | null

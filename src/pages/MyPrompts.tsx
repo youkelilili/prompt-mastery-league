@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { PromptCard } from '@/components/PromptCard';
@@ -31,6 +30,10 @@ const MyPrompts: React.FC = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleViewDetails = (promptId: string) => {
+    navigate(`/prompts/${promptId}`);
   };
 
   // Show loading only when auth is loading OR when prompts are loading but we have a user
@@ -80,6 +83,7 @@ const MyPrompts: React.FC = () => {
                   key={prompt.id}
                   prompt={prompt}
                   onDelete={handleDelete}
+                  onViewDetails={handleViewDetails}
                   showActions={false}
                 />
               ))}
