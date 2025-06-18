@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { PromptCard } from '@/components/PromptCard';
@@ -32,6 +33,10 @@ const BrowsePrompts: React.FC = () => {
 
   const handleViewDetails = (promptId: string) => {
     navigate(`/prompts/${promptId}`);
+  };
+
+  const handleLike = async (promptId: string) => {
+    await toggleLike(promptId);
   };
 
   // Show loading only when auth is loading, or when we have no user and prompts are loading
