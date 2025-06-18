@@ -9,6 +9,7 @@ import { StatsCards } from '@/components/dashboard/StatsCards';
 import { UpgradeProgress } from '@/components/dashboard/UpgradeProgress';
 import { QuickActions } from '@/components/dashboard/QuickActions';
 import { AdminPanel } from '@/components/dashboard/AdminPanel';
+import { TopPromptsSection } from '@/components/dashboard/TopPromptsSection';
 
 const Dashboard: React.FC = () => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -49,8 +50,13 @@ const Dashboard: React.FC = () => {
       <div className="space-y-8">
         <WelcomeSection user={user} />
         <StatsCards user={user} />
-        <UpgradeProgress user={user} />
-        <QuickActions />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="space-y-8">
+            <UpgradeProgress user={user} />
+            <QuickActions />
+          </div>
+          <TopPromptsSection />
+        </div>
         <AdminPanel user={user} />
       </div>
     </Layout>
