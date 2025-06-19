@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { DatabasePrompt, PromptWithAuthor, DatabaseProfile } from '@/types/database';
 import { useAuth } from '@/contexts/AuthContext';
 
-export const usePrompts = () => {
+export const usePrompts = (requireAuth: boolean = false) => {
   const [prompts, setPrompts] = useState<PromptWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
@@ -113,14 +113,23 @@ export const usePrompts = () => {
   };
 
   useEffect(() => {
-    // Only fetch when auth loading is complete
-    if (!authLoading) {
+    // If auth is required, wait for auth loading to complete
+    if (requireAuth) {
+      if (!authLoading) {
+        fetchPrompts();
+      }
+    } else {
+      // If auth is not required, fetch immediately
       fetchPrompts();
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, requireAuth]);
 
   const toggleLike = async (promptId: string) => {
-    if (!user) return;
+    if (!user) {
+      // 如果用户未登录，可以提示需要登录
+      console.log('User must be logged in to like prompts');
+      return;
+    }
 
     try {
       const prompt = prompts.find(p => p.id === promptId);
@@ -158,5 +167,5 @@ export const usePrompts = () => {
     }
   };
 
-  return { prompts, loading, refetch: fetchPrompts, toggleLike };
+  return { prompts, loading: requireAuth ? loading || authLoading : loading, refetch: fetchPrompts, toggleLike };
 };

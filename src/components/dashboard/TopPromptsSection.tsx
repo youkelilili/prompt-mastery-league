@@ -9,7 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
 export const TopPromptsSection: React.FC = () => {
-  const { prompts, loading } = usePrompts();
+  const { prompts, loading } = usePrompts(false); // 不需要认证
   const { t } = useLanguage();
   const navigate = useNavigate();
 

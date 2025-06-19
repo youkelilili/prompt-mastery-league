@@ -18,13 +18,43 @@ const Dashboard: React.FC = () => {
 
   console.log('Dashboard render - user:', user, 'loading:', loading, 'isAuthenticated:', isAuthenticated);
 
-  useEffect(() => {
-    // Only redirect if we're not loading and definitely not authenticated
-    if (!loading && !isAuthenticated) {
-      console.log('User not authenticated, redirecting to login');
-      navigate('/login', { replace: true });
-    }
-  }, [loading, isAuthenticated, navigate]);
+  // 如果未登录，显示公开版本的 Dashboard
+  if (!loading && !isAuthenticated) {
+    return (
+      <Layout>
+        <div className="space-y-8">
+          {/* 公开版本的欢迎信息 */}
+          <div className="text-center py-12">
+            <h1 className="text-4xl font-bold gradient-primary bg-clip-text text-transparent mb-4">
+              欢迎来到 PromptHub
+            </h1>
+            <p className="text-lg text-muted-foreground mb-8">
+              发现和分享最优质的 AI 提示词
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => navigate('/login')}
+                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                登录
+              </button>
+              <button
+                onClick={() => navigate('/prompts')}
+                className="px-6 py-3 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+              >
+                浏览提示词
+              </button>
+            </div>
+          </div>
+          
+          {/* 热门提示词排行 - 公开可见 */}
+          <div className="max-w-4xl mx-auto">
+            <TopPromptsSection />
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   // Show loading state while checking authentication
   if (loading) {
@@ -38,26 +68,22 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  // Don't render anything if not authenticated (will redirect)
-  if (!isAuthenticated || !user) {
-    return null;
-  }
-
-  console.log('Rendering dashboard for user:', user.username, 'role:', user.role);
+  // 已登录用户的完整 Dashboard
+  console.log('Rendering dashboard for user:', user?.username, 'role:', user?.role);
 
   return (
     <Layout>
       <div className="space-y-8">
-        <WelcomeSection user={user} />
-        <StatsCards user={user} />
+        <WelcomeSection user={user!} />
+        <StatsCards user={user!} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-8">
-            <UpgradeProgress user={user} />
+            <UpgradeProgress user={user!} />
             <QuickActions />
           </div>
           <TopPromptsSection />
         </div>
-        <AdminPanel user={user} />
+        <AdminPanel user={user!} />
       </div>
     </Layout>
   );
