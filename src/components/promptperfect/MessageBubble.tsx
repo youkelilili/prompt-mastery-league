@@ -45,17 +45,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         
         {/* 用户消息的操作按钮 */}
         {isUser && (showOptimize || showSendToAssistant) && (
-          <div className="absolute bottom-0 right-0 transform translate-x-2 translate-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute -bottom-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <div className="flex space-x-1">
               {showOptimize && (
                 <Button
                   size="sm"
                   variant="secondary"
                   onClick={() => onOptimize(message.content)}
-                  className="h-6 w-6 p-0"
+                  className="h-6 w-6 p-0 bg-white shadow-md hover:bg-gray-50"
                   title="Optimize"
                 >
-                  <Zap className="w-3 h-3" />
+                  <Zap className="w-3 h-3 text-purple-600" />
                 </Button>
               )}
               {showSendToAssistant && (
@@ -63,10 +63,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   size="sm"
                   variant="secondary"
                   onClick={() => onSendToAssistant(message.content)}
-                  className="h-6 w-6 p-0"
+                  className="h-6 w-6 p-0 bg-white shadow-md hover:bg-gray-50"
                   title="Send to Assistant"
                 >
-                  <Send className="w-3 h-3" />
+                  <Send className="w-3 h-3 text-purple-600" />
                 </Button>
               )}
             </div>
