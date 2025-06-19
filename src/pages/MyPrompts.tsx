@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { PromptCard } from '@/components/PromptCard';
@@ -36,6 +37,16 @@ const MyPrompts: React.FC = () => {
     navigate(`/prompts/${promptId}`);
   };
 
+  const handleCreateNew = () => {
+    if (!user) {
+      // 未登录用户，跳转到登录页面，登录后跳转到创建页面
+      navigate('/login?redirect=/prompts/create');
+    } else {
+      // 已登录用户，直接跳转到创建页面
+      navigate('/prompts/create');
+    }
+  };
+
   // Show loading only when auth is loading OR when prompts are loading but we have a user
   if (authLoading || (loading && user)) {
     return (
@@ -57,7 +68,7 @@ const MyPrompts: React.FC = () => {
               {t('myPrompts.subtitle')}
             </p>
           </div>
-          <Button onClick={() => navigate('/prompts/create')} className="gradient-primary">
+          <Button onClick={handleCreateNew} className="gradient-primary">
             <Plus className="w-4 h-4 mr-2" />
             {t('myPrompts.createNew')}
           </Button>
@@ -66,7 +77,7 @@ const MyPrompts: React.FC = () => {
         {prompts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-lg text-muted-foreground mb-4">{t('myPrompts.noPrompts')}</p>
-            <Button onClick={() => navigate('/prompts/create')} className="gradient-primary">
+            <Button onClick={handleCreateNew} className="gradient-primary">
               <Plus className="w-4 h-4 mr-2" />
               {t('myPrompts.createFirst')}
             </Button>
