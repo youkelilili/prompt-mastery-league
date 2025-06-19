@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Send, Optimize } from 'lucide-react';
+import { Send, Zap } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -55,7 +55,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   className="h-6 w-6 p-0"
                   title="Optimize"
                 >
-                  <Optimize className="w-3 h-3" />
+                  <Zap className="w-3 h-3" />
                 </Button>
               )}
               {showSendToAssistant && (
