@@ -7,6 +7,18 @@ import { ChatInterface } from '@/components/promptperfect/ChatInterface';
 const PromptPerfect: React.FC = () => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'assistant' | 'optimizer'>('assistant');
+  const [optimizerMessage, setOptimizerMessage] = useState('');
+  const [assistantMessage, setAssistantMessage] = useState('');
+
+  const handleOptimize = (content: string) => {
+    setOptimizerMessage(content);
+    setActiveTab('optimizer');
+  };
+
+  const handleSendToAssistant = (content: string) => {
+    setAssistantMessage(content);
+    setActiveTab('assistant');
+  };
 
   return (
     <Layout>
@@ -51,12 +63,16 @@ const PromptPerfect: React.FC = () => {
             title="AI Assistant"
             placeholder="输入您的问题或需求..."
             isActive={activeTab === 'assistant'}
+            onOptimize={handleOptimize}
+            externalMessage={assistantMessage}
           />
           <ChatInterface
             type="optimizer"
             title="Optimizer"
             placeholder="输入需要优化的提示词..."
             isActive={activeTab === 'optimizer'}
+            onSendToAssistant={handleSendToAssistant}
+            externalMessage={optimizerMessage}
           />
         </div>
       </div>

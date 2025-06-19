@@ -18,17 +18,30 @@ interface ChatInterfaceProps {
   title: string;
   placeholder: string;
   isActive: boolean;
+  onOptimize?: (content: string) => void;
+  onSendToAssistant?: (content: string) => void;
+  externalMessage?: string;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   type,
   title,
   placeholder,
-  isActive
+  isActive,
+  onOptimize,
+  onSendToAssistant,
+  externalMessage
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Handle external message input (from other chat)
+  React.useEffect(() => {
+    if (externalMessage && externalMessage.trim()) {
+      setInput(externalMessage);
+    }
+  }, [externalMessage]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -59,14 +72,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }, 1000);
   };
 
-  const handleOptimize = (messageContent: string) => {
+  const handleOptimizeClick = (messageContent: string) => {
     console.log('优化提示词:', messageContent);
-    // 这里可以添加优化逻辑
+    if (onOptimize) {
+      onOptimize(messageContent);
+    }
   };
 
-  const handleSendToAssistant = (messageContent: string) => {
+  const handleSendToAssistantClick = (messageContent: string) => {
     console.log('发送到助手:', messageContent);
-    // 这里可以添加发送到助手的逻辑
+    if (onSendToAssistant) {
+      onSendToAssistant(messageContent);
+    }
   };
 
   return (
@@ -88,8 +105,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               <MessageBubble
                 key={message.id}
                 message={message}
-                onOptimize={handleOptimize}
-                onSendToAssistant={handleSendToAssistant}
+                onOptimize={handleOptimizeClick}
+                onSendToAssistant={handleSendToAssistantClick}
                 showOptimize={type === 'assistant'}
                 showSendToAssistant={type === 'optimizer'}
               />
