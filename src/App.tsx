@@ -11,6 +11,7 @@ import BrowsePrompts from '@/pages/BrowsePrompts';
 import MyPrompts from '@/pages/MyPrompts';
 import CreatePrompt from '@/pages/CreatePrompt';
 import PromptDetail from '@/pages/PromptDetail';
+import PromptPerfect from '@/pages/PromptPerfect';
 import NotFound from '@/pages/NotFound';
 import Profile from '@/pages/Profile';
 
@@ -29,6 +30,7 @@ function App() {
               <Route path="/prompts/:id" element={<PromptDetail />} />
               <Route path="/my-prompts" element={<MyPrompts />} />
               <Route path="/prompts/create" element={<CreatePrompt />} />
+              <Route path="/promptperfect" element={<PromptPerfect />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

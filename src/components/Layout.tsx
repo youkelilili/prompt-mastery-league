@@ -57,6 +57,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     { path: '/dashboard', label: t('nav.dashboard') },
     { path: '/prompts', label: t('nav.browsePrompts') },
     { path: '/my-prompts', label: t('nav.myPrompts') },
+    { path: '/promptperfect', label: 'PromptPerfect' },
   ];
 
   if (user?.role === 'administrator') {
