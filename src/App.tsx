@@ -14,6 +14,7 @@ import PromptDetail from '@/pages/PromptDetail';
 import PromptPerfect from '@/pages/PromptPerfect';
 import NotFound from '@/pages/NotFound';
 import Profile from '@/pages/Profile';
+import Admin from '@/pages/Admin';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="/prompts/create" element={<CreatePrompt />} />
               <Route path="/promptperfect" element={<PromptPerfect />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
