@@ -147,6 +147,23 @@ const Admin: React.FC = () => {
               </Button>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <span>🤖</span>
+                <span>PromptPerfect 模型配置</span>
+              </CardTitle>
+              <CardDescription>
+                配置 AI 模型和 PromptPerfect 功能
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full">
+                模型配置
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </Layout>
