@@ -34,15 +34,15 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ user }) => {
   };
 
   return (
-    <div className="text-center">
-      <h1 className="text-4xl font-bold mb-4">
+    <div className="text-center px-4">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">
         {t('dashboard.welcome').replace('{username}', user.username)}
       </h1>
-      <p className="text-xl text-muted-foreground mb-6">
+      <p className="text-lg sm:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto">
         {t('dashboard.subtitle')}
       </p>
       <div className="flex justify-center">
-        <Badge className={`text-lg px-4 py-2 ${getRoleColor(user.role)}`}>
+        <Badge variant={user.role === 'administrator' ? 'destructive' : user.role === 'prompt_master' ? 'default' : 'secondary'} className="text-sm sm:text-base px-3 py-1">
           {getRoleDisplayName(user.role)}
         </Badge>
       </div>

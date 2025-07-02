@@ -23,31 +23,31 @@ export const StatsCards: React.FC<StatsCardsProps> = ({ user }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       <Card className="text-center">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-purple-600">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">
             {user.total_likes || 0}
           </CardTitle>
-          <CardDescription>{t('dashboard.totalLikes')}</CardDescription>
+          <CardDescription className="text-sm sm:text-base">{t('dashboard.totalLikes')}</CardDescription>
         </CardHeader>
       </Card>
 
       <Card className="text-center">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-purple-600">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-2xl sm:text-3xl font-bold text-primary">
             {user.prompt_count || 0}
           </CardTitle>
-          <CardDescription>{t('dashboard.promptsCreated')}</CardDescription>
+          <CardDescription className="text-sm sm:text-base">{t('dashboard.promptsCreated')}</CardDescription>
         </CardHeader>
       </Card>
 
-      <Card className="text-center">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-purple-600">
+      <Card className="text-center sm:col-span-2 lg:col-span-1">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg sm:text-xl font-bold text-primary break-words">
             {getRoleDisplayName(user.role)}
           </CardTitle>
-          <CardDescription>{t('dashboard.currentLevel')}</CardDescription>
+          <CardDescription className="text-sm sm:text-base">{t('dashboard.currentLevel')}</CardDescription>
         </CardHeader>
       </Card>
     </div>

@@ -24,23 +24,23 @@ const Dashboard: React.FC = () => {
       <Layout>
         <div className="space-y-8">
           {/* 公开版本的欢迎信息 */}
-          <div className="text-center py-12">
-            <h1 className="text-4xl font-bold gradient-primary bg-clip-text text-transparent mb-4">
+          <div className="text-center py-12 px-4">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent mb-4">
               欢迎来到 PromptHub
             </h1>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               发现和分享最优质的 AI 提示词
             </p>
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto">
               <button
                 onClick={() => navigate('/login')}
-                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
               >
                 登录
               </button>
               <button
                 onClick={() => navigate('/prompts')}
-                className="px-6 py-3 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors"
+                className="px-6 py-3 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors font-medium"
               >
                 浏览提示词
               </button>
@@ -73,15 +73,17 @@ const Dashboard: React.FC = () => {
 
   return (
     <Layout>
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8 max-w-7xl mx-auto">
         <WelcomeSection user={user!} />
         <StatsCards user={user!} />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
+          <div className="space-y-6 sm:space-y-8">
             <UpgradeProgress user={user!} />
             <QuickActions />
           </div>
-          <TopPromptsSection />
+          <div className="xl:sticky xl:top-8 xl:self-start">
+            <TopPromptsSection />
+          </div>
         </div>
         <AdminPanel user={user!} />
       </div>

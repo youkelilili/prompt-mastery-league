@@ -28,24 +28,24 @@ export const UpgradeProgress: React.FC<UpgradeProgressProps> = ({ user }) => {
   }
 
   return (
-    <Card className="border-purple-200 bg-purple-50">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
+    <Card className="border-primary/20 bg-primary/5">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
           <span>🏆</span>
-          <span>{t('dashboard.levelProgress')}</span>
+          <span className="break-words">{t('dashboard.levelProgress')}</span>
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm break-words">
           {getUpgradeInfo()}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="w-full bg-purple-200 rounded-full h-3">
+      <CardContent className="pt-0">
+        <div className="w-full bg-muted rounded-full h-2 sm:h-3 overflow-hidden">
           <div 
-            className="bg-gradient-to-r from-purple-600 to-pink-600 h-3 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-primary to-accent h-full rounded-full transition-all duration-500"
             style={{ width: `${Math.min(100, ((user.total_likes || 0) / 10) * 100)}%` }}
           ></div>
         </div>
-        <p className="text-sm text-muted-foreground mt-2">
+        <p className="text-xs sm:text-sm text-muted-foreground mt-2 break-words">
           {user.total_likes || 0}/10 {t('general.likes')} needed for {t('role.promptMaster')}
         </p>
       </CardContent>

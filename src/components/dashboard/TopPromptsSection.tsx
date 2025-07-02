@@ -61,32 +61,32 @@ export const TopPromptsSection: React.FC = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Trophy className="w-5 h-5 text-yellow-500" />
-          <span>热门提示词排行</span>
+    <Card className="h-fit">
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
+          <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0" />
+          <span className="break-words">热门提示词排行</span>
         </CardTitle>
-        <CardDescription>最受欢迎的提示词</CardDescription>
+        <CardDescription className="text-sm">最受欢迎的提示词</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         {topPrompts.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
             暂无提示词数据
           </p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {topPrompts.map((prompt, index) => (
               <div 
                 key={prompt.id} 
-                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
                 onClick={() => navigate(`/prompts/${prompt.id}`)}
               >
-                <div className="flex items-center justify-center w-6">
+                <div className="flex items-center justify-center w-5 sm:w-6 flex-shrink-0">
                   {getRankIcon(index)}
                 </div>
                 
-                <Avatar className="w-8 h-8">
+                <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
                   <AvatarImage src={prompt.author.avatar || undefined} alt={prompt.author.username} />
                   <AvatarFallback className="text-xs">
                     {prompt.author.username.charAt(0).toUpperCase()}
@@ -94,13 +94,13 @@ export const TopPromptsSection: React.FC = () => {
                 </Avatar>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{prompt.title}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs sm:text-sm font-medium truncate">{prompt.title}</p>
+                  <p className="text-xs text-muted-foreground truncate">
                     by {prompt.author.username}
                   </p>
                 </div>
                 
-                <div className="flex items-center space-x-1 text-sm">
+                <div className="flex items-center space-x-1 text-xs sm:text-sm flex-shrink-0">
                   <Heart className="w-3 h-3 text-red-500" />
                   <span className="font-medium">{prompt.likes_count || 0}</span>
                 </div>
