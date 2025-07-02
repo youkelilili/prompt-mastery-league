@@ -159,7 +159,7 @@ const Admin: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full">
+              <Button className="w-full" onClick={() => navigate('/promptperfect')}>
                 模型配置
               </Button>
             </CardContent>
