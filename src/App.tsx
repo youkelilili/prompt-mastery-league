@@ -15,6 +15,7 @@ import PromptPerfect from '@/pages/PromptPerfect';
 import NotFound from '@/pages/NotFound';
 import Profile from '@/pages/Profile';
 import Admin from '@/pages/Admin';
+import ModelConfig from '@/pages/ModelConfig';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/promptperfect" element={<PromptPerfect />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/model-config" element={<ModelConfig />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
