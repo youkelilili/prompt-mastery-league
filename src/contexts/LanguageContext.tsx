@@ -16,6 +16,7 @@ const translations = {
   'nav.settings': '设置',
   'nav.logout': '退出登录',
   'nav.createPrompt': '创建新 Prompt',
+  'nav.promptPerfect': 'PromptPerfect',
   
   // Browse Prompts Page
   'browse.title': '浏览 Prompts',
